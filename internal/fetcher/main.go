@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
+
+	"golang.org/x/net/html"
 )
 
 const baseURL = "https://books.toscrape.com"
@@ -59,19 +62,52 @@ func extractLinks(body string) []string {
 	return links
 }
 
-// resolveURL converts a relative link to an absolute URL using the base URL.
-func resolveURL(base, link string) string {
-	if strings.HasPrefix(link, "http://") || strings.HasPrefix(link, "https://") {
-		return link
+func extractLinksSafe(body string) ([]string, error) {
+	var links []string
+
+	// 1. Parse the raw string into an HTML document tree
+	doc, err := html.Parse(strings.NewReader(body))
+	if err != nil {
+		return nil, err
 	}
-	base = strings.TrimRight(base, "/")
-	if strings.HasPrefix(link, "/") {
-		parts := strings.SplitN(base, "/", 4)
-		if len(parts) >= 3 {
-			return parts[0] + "//" + parts[2] + link
+
+	// 2. Define a recursive function to walk through the tree
+	var traverse func(*html.Node)
+	traverse = func(n *html.Node) {
+		// 3. Check if the current node is an HTML element AND is an <a> tag
+		if n.Type == html.ElementNode && n.Data == "a" {
+			// 4. Loop through the attributes of the <a> tag
+			for _, a := range n.Attr {
+				if a.Key == "href" {
+					links = append(links, a.Val)
+					break // Found the href, no need to check other attributes
+				}
+			}
+		}
+
+		// 5. Recursively call this function for all child nodes
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			traverse(c)
 		}
 	}
-	return base + "/" + link
+
+	// 6. Kick off the traversal starting from the root document node
+	traverse(doc)
+
+	return links, nil
+}
+
+// resolveURL converts a relative link (including./ style) to an absolute URL.
+func resolveURL(base, link string) (string, error) {
+	baseURL, err := url.Parse(base)
+	if err != nil {
+		return "", err
+	}
+	refURL, err := url.Parse(link)
+	if err != nil {
+		return "", err
+	}
+	return baseURL.ResolveReference(refURL).String(), nil
 }
 
 // FetchAndExtract fetches a URL and returns the result plus resolved links.
@@ -86,11 +122,21 @@ func FetchAndExtract(url string) (FetchResult, []string, error) {
 		return result, nil, fmt.Errorf("status %d: %s", result.StatusCode, url)
 	}
 
-	rawLinks := extractLinks(result.Body)
+	rawLinks, _ := extractLinksSafe(result.Body)
 
 	var resolved []string
 	for _, link := range rawLinks {
-		resolved = append(resolved, resolveURL(url, link))
+		// Skip empty, anchor-only, or non-navigable links
+		if link == "" || strings.HasPrefix(link, "#") ||
+			strings.HasPrefix(link, "mailto:") ||
+			strings.HasPrefix(link, "javascript:") {
+			continue
+		}
+		abs, err := resolveURL(url, link)
+		if err != nil {
+			continue // skip malformed links
+		}
+		resolved = append(resolved, abs)
 	}
 
 	return result, resolved, nil
@@ -118,9 +164,19 @@ func main() {
 	}
 
 	// Test resolveURL
-	fmt.Printf("Resolve relative: %s\n", resolveURL(baseURL, "/catalogue/category/books/travel_2"))
-	fmt.Printf("Resolve absolute: %s\n", resolveURL(baseURL, "http://other.com/page"))
+	rel, err := resolveURL(baseURL, "/catalogue/category/books/travel_2")
+	if err != nil {
+		fmt.Printf("ERROR resolving relative: %v\n", err)
+	} else {
+		fmt.Printf("Resolve relative: %s\n", rel)
+	}
 
+	abs, err := resolveURL(baseURL, "http://other.com/page")
+	if err != nil {
+		fmt.Printf("ERROR resolving absolute: %v\n", err)
+	} else {
+		fmt.Printf("Resolve absolute: %s\n", abs)
+	}
 	// Test fetchAndExtract
 	result, resolved, err := FetchAndExtract(baseURL + "/catalogue/category/books/travel_2/")
 	if err != nil {
