@@ -1,0 +1,43 @@
+<mxfile host="Electron">
+  <diagram name="Page-1" id="ultC8CgC14wDIuy-LHyC">
+    <mxGraphModel dx="1069" dy="691" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="ZXziN5t3zPeRq07FlDA0-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Page Fetcher" vertex="1">
+          <mxGeometry height="60" width="120" x="320" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="ZXziN5t3zPeRq07FlDA0-2" parent="1" style="image;aspect=fixed;perimeter=ellipsePerimeter;html=1;align=center;shadow=0;dashed=0;spacingTop=3;image=img/lib/active_directory/internet_globe.svg;" value="" vertex="1">
+          <mxGeometry height="50" width="50" x="110" y="285" as="geometry" />
+        </mxCell>
+        <mxCell id="ZXziN5t3zPeRq07FlDA0-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Link Extractor" vertex="1">
+          <mxGeometry height="60" width="120" x="320" y="370" as="geometry" />
+        </mxCell>
+        <mxCell id="ZXziN5t3zPeRq07FlDA0-5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Visited Tracker" vertex="1">
+          <mxGeometry height="60" width="120" x="320" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="ZXziN5t3zPeRq07FlDA0-6" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Rate&amp;amp;Depth Limiter" vertex="1">
+          <mxGeometry height="60" width="120" x="520" y="380" as="geometry" />
+        </mxCell>
+        <mxCell id="ZXziN5t3zPeRq07FlDA0-7" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Results Collector" vertex="1">
+          <mxGeometry height="60" width="120" x="740" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="ZXziN5t3zPeRq07FlDA0-8" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Orchestrator" vertex="1">
+          <mxGeometry height="60" width="120" x="520" y="285" as="geometry" />
+        </mxCell>
+        <mxCell id="ZXziN5t3zPeRq07FlDA0-9" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="fetch pages" vertex="1">
+          <mxGeometry height="30" width="80" x="310" y="335" as="geometry" />
+        </mxCell>
+        <mxCell id="ZXziN5t3zPeRq07FlDA0-10" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="pulling out the links" vertex="1">
+          <mxGeometry height="30" width="120" x="310" y="425" as="geometry" />
+        </mxCell>
+        <mxCell id="ZXziN5t3zPeRq07FlDA0-11" edge="1" parent="1" source="ZXziN5t3zPeRq07FlDA0-2" style="endArrow=classic;startArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="ZXziN5t3zPeRq07FlDA0-1" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="590" y="420" as="sourcePoint" />
+            <mxPoint x="640" y="370" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
