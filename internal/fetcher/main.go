@@ -1,4 +1,4 @@
-package main
+package fetcher
 
 import (
 	"fmt"
@@ -74,9 +74,9 @@ func resolveURL(base, link string) string {
 	return base + "/" + link
 }
 
-// fetchAndExtract fetches a URL and returns the result plus resolved links.
+// FetchAndExtract fetches a URL and returns the result plus resolved links.
 // Returns an error if the fetch fails or if the status code is not 200.
-func fetchAndExtract(url string) (FetchResult, []string, error) {
+func FetchAndExtract(url string) (FetchResult, []string, error) {
 	result, err := fetchPage(url)
 	if err != nil {
 		return result, nil, err
@@ -122,7 +122,7 @@ func main() {
 	fmt.Printf("Resolve absolute: %s\n", resolveURL(baseURL, "http://other.com/page"))
 
 	// Test fetchAndExtract
-	result, resolved, err := fetchAndExtract(baseURL + "/catalogue/category/books/travel_2/")
+	result, resolved, err := FetchAndExtract(baseURL + "/catalogue/category/books/travel_2/")
 	if err != nil {
 		fmt.Printf("ERROR: %v\n", err)
 	} else {
@@ -133,7 +133,7 @@ func main() {
 	}
 
 	// Test fetchAndExtract on about page
-	result, resolved, err = fetchAndExtract(baseURL + "/catalogue/category/books/travel_2/")
+	result, resolved, err = FetchAndExtract(baseURL + "/catalogue/category/books/travel_2/")
 	if err != nil {
 		fmt.Printf("ERROR: %v\n", err)
 	} else {
@@ -141,7 +141,7 @@ func main() {
 	}
 
 	// Test fetchAndExtract on non-existent page
-	_, _, err = fetchAndExtract(baseURL + "/shop/nonexistent")
+	_, _, err = FetchAndExtract(baseURL + "/shop/nonexistent")
 	if err != nil {
 		fmt.Printf("Fetch error: %v\n", err)
 	}
