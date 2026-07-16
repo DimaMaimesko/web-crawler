@@ -1,0 +1,280 @@
+<mxfile host="Electron" type="device">
+  <diagram name="Component Architecture" id="arch-components">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="cmd-box" value="cmd/crawler" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;verticalAlign=top;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="80" y="60" width="240" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="main-node" value="main()&#10;seed URL, maxWorkers,&#10;maxDepth, rateInterval" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="100" y="100" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="crawler-box" value="internal/crawler" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;verticalAlign=top;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="440" y="40" width="360" height="360" as="geometry" />
+        </mxCell>
+        <mxCell id="crawl-node" value="Crawl()&#10;orchestrator + drain loop&#10;(pending counter)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="470" y="80" width="200" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="worker-node" value="worker()&#10;goroutine pool" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="470" y="170" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="rl-node" value="RateLimiter&#10;time.Ticker" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="640" y="170" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="iface-node" value="Fetcher&#10;&#171;interface&#187;" style="rhombus;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="470" y="270" width="140" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="adapter-node" value="realFetcher&#10;(adapter)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="650" y="285" width="120" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tracker-box" value="internal/tracker" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;verticalAlign=top;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="440" y="440" width="220" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="vt-node" value="VisitedTracker&#10;map[string]bool + RWMutex&#10;MarkVisited / HasVisited" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="460" y="480" width="180" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="fetcher-box" value="internal/fetcher" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;verticalAlign=top;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="920" y="180" width="380" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="fae-node" value="FetchAndExtract()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="210" width="180" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="fp-node" value="fetchPage()&#10;http.Get" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="940" y="290" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="el-node" value="extractLinks()&#10;html.Parse" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="1075" y="290" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="ru-node" value="resolveURL()&#10;url.Parse" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="290" width="90" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="net-node" value="Internet&#10;target website" style="shape=cloud;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="960" y="450" width="160" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e1" style="endArrow=classic;html=1;" edge="1" parent="1" source="main-node" target="crawl-node">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e1-lbl" value="Crawl(f, seed, ...)" style="text;html=1;fillColor=none;strokeColor=none;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="330" y="80" width="120" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" style="endArrow=classic;html=1;dashed=1;" edge="1" parent="1" source="main-node" target="adapter-node">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="200" y="420" />
+              <mxPoint x="710" y="420" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e2-lbl" value="DefaultFetcher()" style="text;html=1;fillColor=none;strokeColor=none;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="330" y="395" width="120" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" style="endArrow=classic;html=1;" edge="1" parent="1" source="crawl-node" target="worker-node">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" style="endArrow=classic;html=1;" edge="1" parent="1" source="worker-node" target="rl-node">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" style="endArrow=classic;html=1;" edge="1" parent="1" source="crawl-node" target="vt-node">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5-lbl" value="dedup URLs" style="text;html=1;fillColor=none;strokeColor=none;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="400" y="430" width="90" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" style="endArrow=classic;html=1;" edge="1" parent="1" source="worker-node" target="iface-node">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6-lbl" value="calls" style="text;html=1;fillColor=none;strokeColor=none;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="500" y="240" width="60" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" style="endArrow=block;endFill=0;html=1;dashed=1;" edge="1" parent="1" source="adapter-node" target="iface-node">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7-lbl" value="implements" style="text;html=1;fillColor=none;strokeColor=none;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="600" y="360" width="80" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" style="endArrow=classic;html=1;" edge="1" parent="1" source="adapter-node" target="fae-node">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8-lbl" value="delegates" style="text;html=1;fillColor=none;strokeColor=none;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="800" y="255" width="80" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" style="endArrow=classic;html=1;" edge="1" parent="1" source="fae-node" target="fp-node">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" style="endArrow=classic;html=1;" edge="1" parent="1" source="fae-node" target="el-node">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" style="endArrow=classic;html=1;" edge="1" parent="1" source="fae-node" target="ru-node">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" style="endArrow=classic;html=1;" edge="1" parent="1" source="fp-node" target="net-node">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12-lbl" value="HTTP GET" style="text;html=1;fillColor=none;strokeColor=none;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="940" y="380" width="80" height="20" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <diagram name="Concurrency &amp; Data Flow" id="arch-concurrency">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="seed" value="seed URL&#10;depth = 0" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="60" y="240" width="120" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="jobs" value="jobs chan CrawlTask&#10;(buffered 100)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="280" y="220" width="140" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="poolbox" value="Worker Pool (maxWorkers goroutines)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#6c8ebf;dashed=1;verticalAlign=top;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="520" y="140" width="260" height="280" as="geometry" />
+        </mxCell>
+        <mxCell id="w1" value="worker 1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="560" y="180" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="w2" value="worker 2" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="560" y="250" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="wn" value="worker N" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="560" y="320" width="180" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="lim" value="RateLimiter&#10;limiter.Wait()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="560" y="440" width="180" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="results" value="results chan PageResult&#10;(buffered 100)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="880" y="220" width="150" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="drain" value="Crawl drain loop&#10;pending &gt; 0 ?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="1120" y="220" width="160" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="check" value="MarkVisited(link)&#10;already visited?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="1130" y="400" width="140" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="collect" value="allResults[]&#10;(Error == '')" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="1160" y="80" width="120" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="drop" value="discard" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;" vertex="1" parent="1">
+          <mxGeometry x="900" y="420" width="90" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="c1" style="endArrow=classic;html=1;" edge="1" parent="1" source="seed" target="jobs">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c1-lbl" value="go func()" style="text;html=1;fillColor=none;strokeColor=none;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="190" y="235" width="80" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="c2" style="endArrow=classic;html=1;" edge="1" parent="1" source="jobs" target="w1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c3" style="endArrow=classic;html=1;" edge="1" parent="1" source="jobs" target="w2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c4" style="endArrow=classic;html=1;" edge="1" parent="1" source="jobs" target="wn">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c5" style="endArrow=classic;html=1;" edge="1" parent="1" source="w2" target="lim">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c5-lbl" value="throttle" style="text;html=1;fillColor=none;strokeColor=none;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="745" y="400" width="60" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="c6" style="endArrow=classic;html=1;" edge="1" parent="1" source="w1" target="results">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c7" style="endArrow=classic;html=1;" edge="1" parent="1" source="results" target="drain">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c8" style="endArrow=classic;html=1;" edge="1" parent="1" source="drain" target="collect">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c8-lbl" value="success" style="text;html=1;fillColor=none;strokeColor=none;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="160" width="60" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="c9" style="endArrow=classic;html=1;" edge="1" parent="1" source="drain" target="check">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c9-lbl" value="for each link" style="text;html=1;fillColor=none;strokeColor=none;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="335" width="80" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="c10" style="endArrow=classic;html=1;" edge="1" parent="1" source="check" target="jobs">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="350" y="540" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c10-lbl" value="no → enqueue (pending++)" style="text;html=1;fillColor=none;strokeColor=none;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="640" y="545" width="160" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="c11" style="endArrow=classic;html=1;" edge="1" parent="1" source="check" target="drop">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c11-lbl" value="yes → skip" style="text;html=1;fillColor=none;strokeColor=none;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="440" width="80" height="20" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <diagram name="Package Dependencies" id="arch-packages">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="900" pageHeight="700" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="p-cmd" value="cmd/crawler" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="40" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="p-crawler" value="internal/crawler" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="160" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="p-tracker" value="internal/tracker" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="180" y="290" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="p-fetcher" value="internal/fetcher" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="540" y="290" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="p-net" value="golang.org/x/net/html" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="440" y="420" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="p-std" value="net/http, net/url, io" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="650" y="420" width="180" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="pe1" style="endArrow=open;html=1;" edge="1" parent="1" source="p-cmd" target="p-crawler">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pe2" style="endArrow=open;html=1;" edge="1" parent="1" source="p-crawler" target="p-tracker">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pe3" style="endArrow=open;html=1;" edge="1" parent="1" source="p-crawler" target="p-fetcher">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pe4" style="endArrow=open;html=1;" edge="1" parent="1" source="p-fetcher" target="p-net">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pe5" style="endArrow=open;html=1;" edge="1" parent="1" source="p-fetcher" target="p-std">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

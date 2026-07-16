@@ -1,21 +1,39 @@
-package main
+package crawler
 
 import (
-	"fmt"
 	"sync"
 	"time"
 
 	"github.com/DimaMaimesko/web-crawler/internal/fetcher"
-	"github.com/DimaMaimesko/web-crawler/internal/visited-tracker"
+	"github.com/DimaMaimesko/web-crawler/internal/tracker"
 )
 
-const baseURL = "https://books.toscrape.com"
+// Fetcher retrieves a page and returns its result plus the links found on it.
+// It is defined here (by the consumer) so the crawler can be tested with a
+// fake implementation, decoupled from the real network-backed fetcher.
+type Fetcher interface {
+	FetchAndExtract(url string) (fetcher.FetchResult, []string, error)
+}
 
+// realFetcher is the production adapter that delegates to the fetcher package.
+type realFetcher struct{}
+
+func (realFetcher) FetchAndExtract(url string) (fetcher.FetchResult, []string, error) {
+	return fetcher.FetchAndExtract(url)
+}
+
+// DefaultFetcher returns the production Fetcher backed by real HTTP requests.
+func DefaultFetcher() Fetcher {
+	return realFetcher{}
+}
+
+// CrawlTask is a single unit of work: a URL to fetch at a given depth.
 type CrawlTask struct {
 	URL   string
 	Depth int
 }
 
+// PageResult is the outcome of crawling a single page.
 type PageResult struct {
 	URL        string
 	StatusCode int
@@ -24,7 +42,7 @@ type PageResult struct {
 	Depth      int
 }
 
-func workerWithLimits(id int, jobs <-chan CrawlTask, results chan<- PageResult,
+func worker(f Fetcher, jobs <-chan CrawlTask, results chan<- PageResult,
 	wg *sync.WaitGroup, maxDepth int, limiter *RateLimiter) {
 	defer wg.Done()
 
@@ -40,7 +58,7 @@ func workerWithLimits(id int, jobs <-chan CrawlTask, results chan<- PageResult,
 
 		limiter.Wait()
 
-		result, links, err := fetcher.FetchAndExtract(task.URL)
+		result, links, err := f.FetchAndExtract(task.URL)
 		pageResult := PageResult{
 			URL:        task.URL,
 			StatusCode: result.StatusCode,
@@ -55,17 +73,19 @@ func workerWithLimits(id int, jobs <-chan CrawlTask, results chan<- PageResult,
 	}
 }
 
-func crawlWithLimits(seedURL string, maxWorkers, maxDepth int, rateInterval time.Duration) []PageResult {
+// Crawl starts from seedURL and crawls concurrently using the given Fetcher,
+// respecting the worker count, max depth, and rate interval.
+func Crawl(f Fetcher, seedURL string, maxWorkers, maxDepth int, rateInterval time.Duration) []PageResult {
 	jobs := make(chan CrawlTask, 100)
 	results := make(chan PageResult, 100)
-	visited := visitedTracker.NewVisitedTracker()
+	visited := tracker.NewVisitedTracker()
 	limiter := NewRateLimiter(rateInterval)
 	defer limiter.Stop()
 
 	var wg sync.WaitGroup
 	for i := 0; i < maxWorkers; i++ {
 		wg.Add(1)
-		go workerWithLimits(i, jobs, results, &wg, maxDepth, limiter)
+		go worker(f, jobs, results, &wg, maxDepth, limiter)
 	}
 
 	go func() {
@@ -75,7 +95,6 @@ func crawlWithLimits(seedURL string, maxWorkers, maxDepth int, rateInterval time
 
 	visited.MarkVisited(seedURL)
 	pending := 1
-	// Send the seed in a goroutine so main is free to drain results.
 	go func() { jobs <- CrawlTask{URL: seedURL, Depth: 0} }()
 
 	var allResults []PageResult
@@ -92,7 +111,6 @@ func crawlWithLimits(seedURL string, maxWorkers, maxDepth int, rateInterval time
 			if visited.MarkVisited(link) {
 				pending++
 				task := CrawlTask{URL: link, Depth: result.Depth + 1}
-				// Send without blocking the drain loop.
 				go func(t CrawlTask) {
 					jobs <- t
 				}(task)
@@ -102,26 +120,4 @@ func crawlWithLimits(seedURL string, maxWorkers, maxDepth int, rateInterval time
 
 	close(jobs)
 	return allResults
-}
-
-func main() {
-	results := crawlWithLimits(baseURL+"/", 2, 1, 1*time.Millisecond)
-
-	fmt.Printf("Crawled %d pages:\n", len(results))
-	for _, r := range results {
-		if r.Error != "" {
-			fmt.Printf("  [%d] %s - ERROR: %s\n", r.Depth, r.URL, r.Error)
-		} else {
-			fmt.Printf("  [%d] %s - %d links\n", r.Depth, r.URL, len(r.Links))
-		}
-	}
-
-	// Count successful pages
-	success := 0
-	for _, r := range results {
-		if r.Error == "" {
-			success++
-		}
-	}
-	fmt.Printf("\nSuccessful: %d, Total: %d\n", success, len(results))
 }
